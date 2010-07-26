@@ -7,6 +7,9 @@
 " Change:
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [+] 2010-07-26
+"     修改 status bar 显示 git 状态
+"
 " [*] 2010-06-17
 "     重新配置 Mac 下的字体
 "
@@ -178,7 +181,7 @@ set rulerformat=%15(%c%V\ %p%%%)
 
 " 命令行于状态行
 set ch=1
-set stl=\ [File]\ %F%m%r%h%y[%{&fileformat},%{&fileencoding}]\ %w\ \ [PWD]\ %r%{GetPWD()}%h\ %=\ [Line]%l/%L\ %=\[%P]
+set stl=\ [File]\ %F%m%r%h%y[%{&fileformat},%{&fileencoding}]\ %w\ \ [PWD]\ %r%{GetPWD()}%h\ %=\ [Line]%l/%L\ %=\[%P]\ %=\[git:%{GitBranch()}\]
 set ls=2 " 始终显示状态行
 set wildmenu "命令行补全以增强模式运行
 
