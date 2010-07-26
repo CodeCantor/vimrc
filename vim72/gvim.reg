@@ -1,0 +1,26 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\gVim 7.2]
+@="gVim 7.2"
+
+[HKEY_CLASSES_ROOT\gVim 7.2\DefaultIcon]
+@="gvim"
+
+[HKEY_CLASSES_ROOT\gVim 7.2\shell]
+
+[HKEY_CLASSES_ROOT\gVim 7.2\shell\open]
+
+[HKEY_CLASSES_ROOT\gVim 7.2\shell\open\command]
+@="gvim \"%1\""
+
+[HKEY_CLASSES_ROOT\.js]
+@="gVim 7.2"
+
+[HKEY_CLASSES_ROOT\.css]
+@="gVim 7.2"
+
+[HKEY_CLASSES_ROOT\.php]
+@="gVim 7.2"
+
+[HKEY_CLASSES_ROOT\.vim]
+@="gVim 7.2"
