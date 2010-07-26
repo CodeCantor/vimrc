@@ -1,7 +1,7 @@
 " File: _vimrc
 " Author: mingcheng<i.feelinglucky@gmail.com>
 " Description: mingcheng's personal vim config file.
-" Last Modified: $Id: _vimrc 484 2010-07-23 08:05:18Z i.feelinglucky $
+" Last Modified: $Id$
 " Blog: http://www.gracecode.com/
 " Since: 2008-10-07
 " Change:
