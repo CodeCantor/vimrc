@@ -1,5 +1,7 @@
+_vimfavourites
 *.iml
 .idea
+.svn
 *~
 *.diff
 *.patch
