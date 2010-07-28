@@ -93,7 +93,7 @@
 "     初始化版本，啥时开始的无从考证 :^D
 "
 
-if exists("mingcheng")
+if exists("g:mingcheng")
     finish
 endif
 let g:mingcheng = 1
@@ -471,10 +471,6 @@ nmap <C-p>   :tabprevious<CR>
 nmap <C-n>   :tabnext<CR>
 nmap <C-k>   :tabclose<CR>
 nmap <C-Tab> :tabnext<CR> 
-
-"for i in range(1, &tabpagemax)
-"    exec 'nmap <A-'.i.'> '.i.'gt'
-"endfor
 
 " 插件快捷键
 nmap <C-d> :NERDTree<CR>
