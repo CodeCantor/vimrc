@@ -1,1 +1,24 @@
 明城的 Vim 配置文件
+
+Directory Structure
+===================
+
+.
+|-- vim72
+|   |-- ...
+|   `-- tutor
+`-- vimfiles
+    |-- after
+    |-- autoload
+    |-- colors
+    |-- dict
+    |-- doc
+    |-- ftdetect
+    |-- ftplugin
+    |-- indent
+    |-- lib
+    |-- plugin
+    |-- session
+    |-- snippets
+    |-- syntax
+    `-- templates
