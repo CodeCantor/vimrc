@@ -20,6 +20,7 @@
 -replace
 -set-link-source
 -use-link-source
+absolute
 accelerator
 azimuth
 background
