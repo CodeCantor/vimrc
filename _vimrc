@@ -7,6 +7,9 @@
 " Change:
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [*] 2010-08-25
+"     修改 Vimwiki 命令和快捷键
+"
 " [!] 2010-07-26
 "     修改 status bar 显示 git 状态（已取消）
 "
@@ -539,8 +542,8 @@ if !exists("g:vimwiki_list")
     au FileType vimwiki set ff=unix fenc=utf8 noswapfile nobackup
     "au FileType vimwiki imap <C-t> <c-r>=TriggerSnippet()<CR>
 
-    nmap <C-i><C-i> :VimwikiTabGoHome<CR>
-    nmap <leader>ii :VimwikiTabGoHome<CR>
+    nmap <C-i><C-i> :VimwikiTabIndex<CR>
+    nmap <leader>ii :VimwikiTabIndex<CR>
 endif
 
 " on Windows, default charset is gbk
