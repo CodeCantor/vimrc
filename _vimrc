@@ -106,6 +106,8 @@ if v:version < 700
     quit
 endif
 
+" {{{ 相关函数声明
+
 " 获取当前目录
 func! GetPWD()
     return substitute(getcwd(), "", "", "g")
@@ -154,7 +156,7 @@ func! VisualSearch(direction) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunc
-
+" }}}
 
 " ============
 " Environment
@@ -195,9 +197,11 @@ let maplocalleader = ","
 " Search Option
 set hlsearch  " Highlight search things
 set magic     " Set magic on, for regular expressions
-set showmatch " Show matching bracets when text indicator is over them
 set mat=2     " How many tenths of a second to blink
 set noincsearch
+
+" 输入括号时短暂跳到与之相匹配之处 
+set showmatch 
 
 " 制表符
 set tabstop=4
@@ -237,6 +241,8 @@ set completeopt=longest,menu
 
 " 代码折叠
 set foldmethod=marker
+set foldlevel=3 
+set foldcolumn=2
 
 " =====================
 " 多语言环境
@@ -337,6 +343,9 @@ if has("autocmd")
     " 将指定文件的换行符转换成 UNIX 格式
     au FileType php,javascript,html,css,python,vim,vimwiki set ff=unix
     au FileType python set makeprg="python -u %"
+
+	au FileType php,c,cpp,java set mps+==:; " '=' 和 ';' 使用 % 来回匹配
+	au FileType html,xhtml set mps+=<:> " 匹配括号的规则，增加 HTML 的 <>
 
     " JSON 语法高亮
     au! BufRead,BufNewFile *.json setfiletype json 
@@ -502,6 +511,9 @@ nmap <C-g><C-f> :call GotoFirstEffectiveLine()<CR>
 " 按下 Q 不进入 Ex 模式，而是退出
 nmap Q :x<CR>
 
+" Ctrl+S 保存文件（Windows 下的老习惯）
+nmap <c-s> :w<CR> 
+imap <c-s> <Esc>:w<CR>a 
 
 " =================
 " Plugin Configure
@@ -519,6 +531,7 @@ let g:no_html_toolbar = 'yes'
 
 " VimWiki 配置
 if !exists("g:vimwiki_list")
+    let g:vimwiki_CJK_length = 1
     let g:vimwiki_list = [
                 \{"path": "~/Wiki/Default/", "path_html": "~/Sites/wiki/",  
                 \   "html_footer": "~/Wiki/Default/footer.tpl", "html_header": "~/Wiki/Default/header.tpl",
