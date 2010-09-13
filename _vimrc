@@ -1,14 +1,16 @@
 " File: _vimrc
 " Author: mingcheng<i.feelinglucky@gmail.com>
 " Description: mingcheng's personal vim config file.
-" Last Modified: $Id$
 " Blog: http://www.gracecode.com/
 " Since: 2008-10-07
 " Change:
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [+] 2010-09-13
+"     增加永久撤销（for Vim7.3）相关配置
+"
 " [*] 2010-08-25
-"     修改 Vimwiki 命令和快捷键 
+"     修改 Vimwiki 命令和快捷键
 "
 " [!] 2010-07-26
 "     修改 status bar 显示 git 状态（已取消）
@@ -162,7 +164,7 @@ endfunc
 " Environment
 " ============
 " 保留历史记录
-set history=500
+set history=1000
 
 " 行控制
 set linebreak
@@ -232,7 +234,7 @@ if has('netbeans_intg')
 endif
 
 " 备份和缓存
-"set nobackup
+set nobackup
 "set noswapfile
 
 " 自动完成
@@ -269,6 +271,18 @@ else
     echoerr "Sorry, this version of (g)vim was not compiled with +multi_byte"
 endif
 
+" 永久撤销，Vim7.3 新特性
+if has('persistent_undo')
+    set undofile
+    set undodir=d:/temp/,/tmp/,~/tmp " 设置撤销文件的存放的目录
+    set undolevels=1000
+    set undoreload=10000
+endif
+
+" Diff 模式的时候鼠标同步滚动 for Vim7.3
+if has('cursorbind')
+    set cursorbind
+end
 
 " =========
 " AutoCmd
