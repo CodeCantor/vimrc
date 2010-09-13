@@ -8,7 +8,7 @@
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
 " [*] 2010-08-25
-"     修改 Vimwiki 命令和快捷键
+"     修改 Vimwiki 命令和快捷键 
 "
 " [!] 2010-07-26
 "     修改 status bar 显示 git 状态（已取消）
