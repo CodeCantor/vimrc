@@ -397,8 +397,8 @@ if has("autocmd")
             amenu <silent> 70.9999 &Window.Toggle\ &Stick<Tab><C-t><C-s>  :call ToggleStickWin()<CR>
             nmap  <leader>ts :silent call ToggleStickWin()<CR>
         elseif has("unix")
-            au GUIEnter * winpos 0 0
-            set lines=999 columns=999
+            "au GUIEnter * winpos 0 0
+            "set lines=999 columns=999
         endif
     endif
 endif
