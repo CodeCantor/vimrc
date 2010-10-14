@@ -1,10 +1,14 @@
 " File: _vimrc
 " Author: mingcheng<i.feelinglucky@gmail.com>
-" Description: mingcheng's personal vim config file.
+" Description: mingcheng's (mac)vim config file.
 " Blog: http://www.gracecode.com/
 " Since: 2008-10-07
 " Change:
+"
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
+"
+" [!] 2010-10-14
+"     更改配色为 Son of Obsidian，参见 http://studiostyl.es/schemes/son-of-obsidian
 "
 " [+] 2010-09-13
 "     增加永久撤销（for Vim7.3）相关配置
@@ -573,6 +577,10 @@ if !exists("g:vimwiki_list")
     nmap <leader>ii :VimwikiTabIndex<CR>
 endif
 
+" Zen-Coding HotKey
+let g:user_zen_expandabbr_key = '<c-y><c-y>'
+let g:use_zen_complete_tag = 1
+
 " on Windows, default charset is gbk
 if has("win32")
     let g:fontsize#encoding = "cp936"
@@ -583,13 +591,13 @@ endif
 " Color Scheme
 " =============
 if has('syntax')
-    colorscheme zenburn
+    colorscheme sonofobsidian
 
     " 默认编辑器配色
-    au BufNewFile,BufRead,BufEnter,WinEnter * colo zenburn
+    au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
 
     " 各不同类型的文件配色不同
-    au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo moria
+    "au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo selenitic
 
     " 保证语法高亮
     syntax on
