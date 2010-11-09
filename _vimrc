@@ -250,6 +250,7 @@ set foldmethod=marker
 set foldlevel=3 
 set foldcolumn=2
 
+
 " =====================
 " 多语言环境
 "    默认为 UTF-8 编码
@@ -342,6 +343,13 @@ if has("autocmd")
     let s:dict_dir = "setlocal dict+=".s:dict_dir
 
     au FileType php exec s:dict_dir."php_funclist.dict"
+
+    " 修改运行时，加入 PHP 函数帮助列表
+    if has('win32')
+        au FileType php let &runtimepath=&runtimepath.",d:/php-vim-doc"
+        au FileType php set keywordprg=:help
+    endif
+
     au FileType css exec s:dict_dir."css.dict"
     au FileType javascript exec s:dict_dir."javascript.dict"
 
@@ -372,8 +380,8 @@ if has("autocmd")
     if has('gui_running')
         if has("win32")
             " 给 Win32 下的 gVim 窗口设置透明度（不推荐）
-            "            au GUIEnter * call libcallnr("vimtweak.dll", "SetAlpha", 248)
-            "            au GUIEnter * simalt ~x
+            "au GUIEnter * call libcallnr("vimtweak.dll", "SetAlpha", 250)
+            "au GUIEnter * simalt ~x
             " 启动设置为最大化
             au GUIEnter * call libcallnr("vimtweak.dll", "EnableMaximize", 1)
 
@@ -591,10 +599,11 @@ endif
 " Color Scheme
 " =============
 if has('syntax')
-    colorscheme sonofobsidian
+    "colorscheme sonofobsidian
+    colorscheme zenburn
 
     " 默认编辑器配色
-    au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
+    "au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
 
     " 各不同类型的文件配色不同
     "au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo selenitic
