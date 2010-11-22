@@ -7,6 +7,9 @@
 "
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [!] 2010-11-22
+"     增加 void 配色，更改配色设置（蛋疼）
+"
 " [!] 2010-10-14
 "     更改配色为 Son of Obsidian，参见 http://studiostyl.es/schemes/son-of-obsidian
 "
@@ -603,10 +606,10 @@ if has('syntax')
     colorscheme zenburn
 
     " 默认编辑器配色
-    "au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
+    au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
 
     " 各不同类型的文件配色不同
-    "au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo selenitic
+    au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo void
 
     " 保证语法高亮
     syntax on
