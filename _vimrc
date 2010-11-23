@@ -1,32 +1,17 @@
 " File: _vimrc
 " Author: mingcheng<i.feelinglucky@gmail.com>
-" Description: mingcheng's (mac)vim config file.
+" Description: mingcheng's personal vim config file.
+" Last Modified: $Id: _vimrc 467 2010-05-11 03:49:05Z i.feelinglucky $
 " Blog: http://www.gracecode.com/
 " Since: 2008-10-07
 " Change:
-"
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
-"
-" [!] 2010-10-14
-"     更改配色为 Son of Obsidian，参见 http://studiostyl.es/schemes/son-of-obsidian
-"
-" [+] 2010-09-13
-"     增加永久撤销（for Vim7.3）相关配置
-"
-" [*] 2010-08-25
-"     修改 Vimwiki 命令和快捷键
-"
-" [!] 2010-07-26
-"     修改 status bar 显示 git 状态（已取消）
-"
-" [*] 2010-06-17
-"     重新配置 Mac 下的字体
 "
 " [+] 2010-05-11
 "     给 Win32 下的 gVim 窗口设置透明度
 "
 " [+] 2010-04-22
-"     修改 <leader> 键为 ','
+"     修改 <Leader> 键为 ','
 "
 " [+] 2010-04-21
 "     增加 wildmenu 选项，同时修改“雅黑”字体为英文名称
@@ -102,7 +87,7 @@
 "     初始化版本，啥时开始的无从考证 :^D
 "
 
-if exists("g:mingcheng")
+if exists("mingcheng")
     finish
 endif
 let g:mingcheng = 1
@@ -111,8 +96,6 @@ if v:version < 700
     echoerr 'This _vimrc requires Vim 7 or later.'
     quit
 endif
-
-" {{{ 相关函数声明
 
 " 获取当前目录
 func! GetPWD()
@@ -162,13 +145,13 @@ func! VisualSearch(direction) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunc
-" }}}
+
 
 " ============
 " Environment
 " ============
 " 保留历史记录
-set history=1000
+set history=500
 
 " 行控制
 set linebreak
@@ -196,18 +179,16 @@ set stl=\ [File]\ %F%m%r%h%y[%{&fileformat},%{&fileencoding}]\ %w\ \ [PWD]\ %r%{
 set ls=2 " 始终显示状态行
 set wildmenu "命令行补全以增强模式运行
 
-" 定义 <leader> 为逗号
+" 定义 <Leader> 为逗号
 let mapleader = ","
 let maplocalleader = ","
 
 " Search Option
 set hlsearch  " Highlight search things
 set magic     " Set magic on, for regular expressions
+set showmatch " Show matching bracets when text indicator is over them
 set mat=2     " How many tenths of a second to blink
 set noincsearch
-
-" 输入括号时短暂跳到与之相匹配之处 
-set showmatch 
 
 " 制表符
 set tabstop=4
@@ -238,7 +219,7 @@ if has('netbeans_intg')
 endif
 
 " 备份和缓存
-set nobackup
+"set nobackup
 "set noswapfile
 
 " 自动完成
@@ -247,9 +228,6 @@ set completeopt=longest,menu
 
 " 代码折叠
 set foldmethod=marker
-set foldlevel=3 
-set foldcolumn=2
-
 
 " =====================
 " 多语言环境
@@ -259,7 +237,7 @@ if has("multi_byte")
     set encoding=utf-8
     " English messages only
     "language messages zh_CN.utf-8
-
+    
     if has('win32')
         language english
         let &termencoding=&encoding
@@ -276,18 +254,6 @@ else
     echoerr "Sorry, this version of (g)vim was not compiled with +multi_byte"
 endif
 
-" 永久撤销，Vim7.3 新特性
-if has('persistent_undo')
-    set undofile
-    set undodir=d:/temp/,/tmp/,~/tmp " 设置撤销文件的存放的目录
-    set undolevels=1000
-    set undoreload=10000
-endif
-
-" Diff 模式的时候鼠标同步滚动 for Vim7.3
-if has('cursorbind')
-    set cursorbind
-end
 
 " =========
 " AutoCmd
@@ -343,18 +309,11 @@ if has("autocmd")
     let s:dict_dir = "setlocal dict+=".s:dict_dir
 
     au FileType php exec s:dict_dir."php_funclist.dict"
-
-    " 修改运行时，加入 PHP 函数帮助列表
-    if has('win32')
-        au FileType php let &runtimepath=&runtimepath.",d:/php-vim-doc"
-        au FileType php set keywordprg=:help
-    endif
-
     au FileType css exec s:dict_dir."css.dict"
     au FileType javascript exec s:dict_dir."javascript.dict"
 
     " 格式化 JavaScript 文件
-    au FileType javascript map <f12> :call g:Jsbeautify()<CR>
+    au FileType javascript map <f12> :call g:Jsbeautify()<cr>
     au FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 
     " 增加 ActionScript 语法支持
@@ -368,49 +327,17 @@ if has("autocmd")
 
     " 将指定文件的换行符转换成 UNIX 格式
     au FileType php,javascript,html,css,python,vim,vimwiki set ff=unix
-    au FileType python set makeprg="python -u %"
-
-	au FileType php,c,cpp,java set mps+==:; " '=' 和 ';' 使用 % 来回匹配
-	au FileType html,xhtml set mps+=<:> " 匹配括号的规则，增加 HTML 的 <>
-
-    " JSON 语法高亮
-    au! BufRead,BufNewFile *.json setfiletype json 
 
     " 自动最大化窗口
     if has('gui_running')
         if has("win32")
-            " 给 Win32 下的 gVim 窗口设置透明度（不推荐）
-            "au GUIEnter * call libcallnr("vimtweak.dll", "SetAlpha", 250)
-            "au GUIEnter * simalt ~x
-            " 启动设置为最大化
-            au GUIEnter * call libcallnr("vimtweak.dll", "EnableMaximize", 1)
-
-            " （取消）设置总在最前
-            let s:stick_window_status=0
-            func! StickWin()
-                call libcallnr("vimtweak.dll", "EnableTopMost", 1)
-                let s:stick_window_status=1
-            endf
-
-            func! UNStickWin()
-                call libcallnr("vimtweak.dll", "EnableTopMost", 0)
-                let s:stick_window_status=0
-            endf
-
-            func! ToggleStickWin() 
-                if s:stick_window_status
-                    call UNStickWin()
-                else
-                    call StickWin()
-                endif
-            endf
-
-            amenu 70.9998 &Window.-SEP- <Nop>
-            amenu <silent> 70.9999 &Window.Toggle\ &Stick<Tab><C-t><C-s>  :call ToggleStickWin()<CR>
-            nmap  <leader>ts :silent call ToggleStickWin()<CR>
-        elseif has("unix")
+            au GUIEnter * simalt ~x
+            "elseif has("unix")
             "au GUIEnter * winpos 0 0
             "set lines=999 columns=999
+            
+            " 给 Win32 下的 gVim 窗口设置透明度
+            au GUIEnter * call libcallnr("vimtweak.dll", "SetAlpha", 245)
         endif
     endif
 endif
@@ -425,121 +352,115 @@ if has('gui_running')
     " 高亮光标所在的行
     set cursorline
 
-    " 设置行高
-    set linespace=2
-
     if has("win32")
         " Windows 兼容配置
         source $VIMRUNTIME/mswin.vim
 
         " f11 最大化
-        nmap <f11> :call libcallnr('fullscreen.dll', 'ToggleFullScreen', 0)<CR>
-        nmap <leader>ff :call libcallnr('fullscreen.dll', 'ToggleFullScreen', 0)<CR>
-
+        nmap <f11> :call libcallnr('fullscreen.dll', 'ToggleFullScreen', 0)<cr>
+        nmap <Leader>ff :call libcallnr('fullscreen.dll', 'ToggleFullScreen', 0)<cr>
+        
         " 字体配置
         exec 'set guifont='.iconv('Courier_New', &enc, 'gbk').':h10:cANSI'
         exec 'set guifontwide='.iconv('Microsoft\ YaHei', &enc, 'gbk').':h10'
     endif
 
     " Under Linux/Unix etc.
-    if has("unix") && !has('mac')
+    if has("unix") && !has('gui_macvim')
         set guifont=Courier\ 10\ Pitch\ 11
     endif
 
     " Under the Mac(MacVim)
-    if has("mac")
-        " 开启抗锯齿渲染
-        set anti
+    if has("mac") || has("gui_macvim")
+        if has("gui_macvim")
+            " MacVim 下的字体配置
+            set guifont=Courier_New:h14
+            set guifontwide=YouYuan:h14
 
-        " MacVim 下的字体配置
-        set guifont=Courier_New:h13
-        set guifontwide=YouYuan:h13
+            " 半透明和窗口大小
+            set transparency=2
+            set lines=200 columns=120
 
-        " 半透明和窗口大小
-        set transparency=2
-        set lines=200 columns=140
+            " 使用 MacVim 原生的全屏幕功能
+            let s:lines=&lines
+            let s:columns=&columns
 
-        " 使用 MacVim 原生的全屏幕功能
-        let s:lines=&lines
-        let s:columns=&columns
+            func! FullScreenEnter()
+                set lines=999 columns=999
+                set fu
+            endf
 
-        func! FullScreenEnter()
-            set lines=999 columns=999
-            set fu
-        endf
+            func! FullScreenLeave()
+                let &lines=s:lines
+                let &columns=s:columns
+                set nofu
+            endf
 
-        func! FullScreenLeave()
-            let &lines=s:lines
-            let &columns=s:columns
-            set nofu
-        endf
+            func! FullScreenToggle()
+                if &fullscreen
+                    call FullScreenLeave()
+                else
+                    call FullScreenEnter()
+                endif
+            endf
 
-        func! FullScreenToggle()
-            if &fullscreen
-                call FullScreenLeave()
-            else
-                call FullScreenEnter()
-            endif
-        endf
+            set guioptions+=e
+            " Mac 下，按 <Leader>ff 切换全屏
+            nmap <f11> :call FullScreenToggle()<cr>
+            nmap <Leader>ff  :call FullScreenToggle()<cr>
 
-        set guioptions+=e
-        " Mac 下，按 <leader>ff 切换全屏
-        nmap <f11> :call FullScreenToggle()<CR>
-        nmap <leader>ff  :call FullScreenToggle()<CR>
+            " I like TCSH :^)
+            set shell=/bin/tcsh
 
-        " I like TCSH :^)
-        set shell=/bin/tcsh
+            " Set input method off
+            set imdisable
 
-        " Set input method off
-        set imdisable
+            " Set QuickTemplatePath
+            let g:QuickTemplatePath = $HOME.'/.vim/templates/'
 
-        " Set QuickTemplatePath
-        let g:QuickTemplatePath = $HOME.'/.vim/templates/'
-
-        " 如果为空文件，则自动设置当前目录为桌面
-        lcd ~/Desktop/
+            " 如果为空文件，则自动设置当前目录为桌面
+            lcd ~/Desktop/
+        endif
     endif
 endif
 
 " =============
 " Key Shortcut
 " =============
-nmap <C-t>   :tabnew<CR>
-nmap <C-p>   :tabprevious<CR>
-nmap <C-n>   :tabnext<CR>
-nmap <C-k>   :tabclose<CR>
-nmap <C-Tab> :tabnext<CR> 
+nmap <C-t>   :tabnew<cr>
+nmap <C-p>   :tabprevious<cr>
+nmap <C-n>   :tabnext<cr>
+nmap <C-k>   :tabclose<cr>
+nmap <C-Tab> :tabnext<cr> 
+
+"for i in range(1, &tabpagemax)
+"    exec 'nmap <A-'.i.'> '.i.'gt'
+"endfor
 
 " 插件快捷键
-nmap <C-d> :NERDTree<CR>
-nmap <C-e> :BufExplorer<CR>
-nmap <f2>  :BufExplorer<CR>
+nmap <C-d> :NERDTree<cr>
+nmap <C-e> :BufExplorer<cr>
+nmap <f2>  :BufExplorer<cr>
 
 " 插入模式按 F4 插入当前时间
-imap <f4> <C-r>=GetDateStamp()<CR>
+imap <f4> <C-r>=GetDateStamp()<cr>
 
 " 新建 XHTML 、PHP、Javascript 文件的快捷键
-nmap <C-c><C-h> :NewQuickTemplateTab xhtml<CR>
-nmap <C-c><C-p> :NewQuickTemplateTab php<CR>
-nmap <C-c><C-j> :NewQuickTemplateTab javascript<CR>
-nmap <C-c><C-c> :NewQuickTemplateTab css<CR>
-
-" 常用<leader>快捷键
-nmap <leader>ca :Calendar<CR>
-nmap <leader>mr :MRU<CR>
-nmap <leader>dd :NERDTree<CR>
-nmap <leader>bf :BufExplorer<CR>
-nmap <leader>= :let cursorPos=getpos(".")<CR>gg=G:call setpos('.', cursorPos)<CR>:unlet cursorPos<CR>
+nmap <C-c><C-h> :NewQuickTemplateTab xhtml<cr>
+nmap <C-c><C-p> :NewQuickTemplateTab php<cr>
+nmap <C-c><C-j> :NewQuickTemplateTab javascript<cr>
+nmap <C-c><C-c> :NewQuickTemplateTab css<cr>
+nmap <Leader>ca :Calendar<cr>
+nmap <Leader>mr :MRU<cr>
+nmap <Leader>dd :NERDTree<cr>
+nmap <Leader>bf :BufExplorer<cr>
 
 " 直接查看第一行生效的代码
-nmap <C-g><C-f> :call GotoFirstEffectiveLine()<CR>
+nmap <C-g><C-f> :call GotoFirstEffectiveLine()<cr>
 
 " 按下 Q 不进入 Ex 模式，而是退出
-nmap Q :x<CR>
+nmap Q :x<cr>
 
-" Ctrl+S 保存文件（Windows 下的老习惯）
-nmap <c-s> :w<CR> 
-imap <c-s> <Esc>:w<CR>a 
 
 " =================
 " Plugin Configure
@@ -557,37 +478,35 @@ let g:no_html_toolbar = 'yes'
 
 " VimWiki 配置
 if !exists("g:vimwiki_list")
-    let g:vimwiki_CJK_length = 1
     let g:vimwiki_list = [
                 \{"path": "~/Wiki/Default/", "path_html": "~/Sites/wiki/",  
                 \   "html_footer": "~/Wiki/Default/footer.tpl", "html_header": "~/Wiki/Default/header.tpl",
-                \   "auto_export": 1}
+                \   "auto_export": 1},
+                \{"path": "~/Wiki/WebWW/",   "path_html": "~/Sites/webww/", "auto_export": 1}
                 \]
     let g:vimwiki_auto_checkbox = 0
     if has('win32')
         " 注意！
         " 1、如果在 Windows 下，盘符必须大写
         " 2、路径末尾最好加上目录分隔符
-        let s:vimwiki_root = "d:/My Documents/My Dropbox/Vimwiki/"
+        let s:vimwiki_root = "D:/Documents/My Dropbox/Vimwiki"
         let g:vimwiki_list = [
                     \{"path": s:vimwiki_root."/Default/", 
-                    \   "html_footer": s:vimwiki_root."/Default/footer.tpl",
+                    \   "html_footer": s:vimwiki_root."/Default/footer.tpl", 
                     \   "html_header": s:vimwiki_root."/Default/header.tpl",
-                    \   "path_html": s:vimwiki_root."/Default/_output/", "auto_export": 1}
+                    \   "path_html": s:vimwiki_root."/Default/_output/", "auto_export": 1},
+                    \{"path": s:vimwiki_root."/WebWW/", 
+                    \"path_html": s:vimwiki_root."/WebWW/html/",   "auto_export": 1}
                     \]
         let g:vimwiki_w32_dir_enc = 'cp936'
     endif
 
     au FileType vimwiki set ff=unix fenc=utf8 noswapfile nobackup
-    "au FileType vimwiki imap <C-t> <c-r>=TriggerSnippet()<CR>
+    "au FileType vimwiki imap <C-t> <c-r>=TriggerSnippet()<cr>
 
-    nmap <C-i><C-i> :VimwikiTabIndex<CR>
-    nmap <leader>ii :VimwikiTabIndex<CR>
+    nmap <C-i><C-i> :VimwikiTabGoHome<cr>
+    nmap <Leader>ii :VimwikiTabGoHome<cr>
 endif
-
-" Zen-Coding HotKey
-let g:user_zen_expandabbr_key = '<c-y><c-y>'
-let g:use_zen_complete_tag = 1
 
 " on Windows, default charset is gbk
 if has("win32")
@@ -599,14 +518,13 @@ endif
 " Color Scheme
 " =============
 if has('syntax')
-    "colorscheme sonofobsidian
     colorscheme zenburn
 
     " 默认编辑器配色
-    "au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
+    au BufNewFile,BufRead,BufEnter,WinEnter * colo zenburn
 
     " 各不同类型的文件配色不同
-    "au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo selenitic
+    au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo moria
 
     " 保证语法高亮
     syntax on

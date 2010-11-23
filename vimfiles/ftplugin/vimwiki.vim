@@ -21,11 +21,6 @@ let b:undo_ftplugin = "setlocal ".
 
 setlocal autowriteall
 setlocal commentstring=<!--%s-->
-
-if g:vimwiki_conceallevel && exists("+conceallevel")
-  let &conceallevel = g:vimwiki_conceallevel
-endif
-
 " MISC }}}
 
 " GOTO FILE: gf {{{
@@ -43,22 +38,32 @@ else
 endif
 setlocal formatoptions=tnro
 
+inoremap <buffer> <expr> <CR> vimwiki_lst#insertCR()
+nnoremap <buffer> o :call vimwiki_lst#insertOo('o')<CR>a
+nnoremap <buffer> O :call vimwiki_lst#insertOo('O')<CR>a
+
 if !empty(&langmap)
   " Valid only if langmap is a comma separated pairs of chars
   let l_o = matchstr(&langmap, '\C,\zs.\zeo,')
   if l_o
-    exe 'nnoremap <buffer> '.l_o.' :call vimwiki_lst#kbd_oO("o")<CR>a'
+    exe 'nnoremap <buffer> '.l_o.' :call vimwiki_lst#insertOo("o")<CR>a'
   endif
 
   let l_O = matchstr(&langmap, '\C,\zs.\zeO,')
   if l_O
-    exe 'nnoremap <buffer> '.l_O.' :call vimwiki_lst#kbd_oO("O")<CR>a'
+    exe 'nnoremap <buffer> '.l_O.' :call vimwiki_lst#insertOo("O")<CR>a'
   endif
 endif
 
 " COMMENTS }}}
 
 " FOLDING for headers and list items using expr fold method. {{{
+if g:vimwiki_folding == 1
+  setlocal fdm=expr
+  setlocal foldexpr=VimwikiFoldLevel(v:lnum)
+  setlocal foldtext=VimwikiFoldText()
+endif
+
 function! VimwikiFoldLevel(lnum) "{{{
   let line = getline(a:lnum)
 
@@ -203,14 +208,14 @@ command! -buffer Vimwiki2HTML
 command! -buffer VimwikiAll2HTML
       \ call vimwiki_html#WikiAll2HTML(expand(VimwikiGet('path_html')))
 
-command! -buffer VimwikiNextLink call vimwiki#find_next_link()
-command! -buffer VimwikiPrevLink call vimwiki#find_prev_link()
-command! -buffer VimwikiDeleteLink call vimwiki#delete_link()
-command! -buffer VimwikiRenameLink call vimwiki#rename_link()
-command! -buffer VimwikiFollowLink call vimwiki#follow_link('nosplit')
-command! -buffer VimwikiGoBackLink call vimwiki#go_back_link()
-command! -buffer VimwikiSplitLink call vimwiki#follow_link('split')
-command! -buffer VimwikiVSplitLink call vimwiki#follow_link('vsplit')
+command! -buffer VimwikiNextWord call vimwiki#WikiNextWord()
+command! -buffer VimwikiPrevWord call vimwiki#WikiPrevWord()
+command! -buffer VimwikiDeleteWord call vimwiki#WikiDeleteWord()
+command! -buffer VimwikiRenameWord call vimwiki#WikiRenameWord()
+command! -buffer VimwikiFollowWord call vimwiki#WikiFollowWord('nosplit')
+command! -buffer VimwikiGoBackWord call vimwiki#WikiGoBackWord()
+command! -buffer VimwikiSplitWord call vimwiki#WikiFollowWord('split')
+command! -buffer VimwikiVSplitWord call vimwiki#WikiFollowWord('vsplit')
 
 command! -buffer -range VimwikiToggleListItem call vimwiki_lst#ToggleListItem(<line1>, <line2>)
 
@@ -222,8 +227,6 @@ exe 'command! -buffer -nargs=* VimwikiSearch vimgrep <args> '.
 exe 'command! -buffer -nargs=* VWS vimgrep <args> '.
       \ escape(VimwikiGet('path').'**/*'.VimwikiGet('ext'), ' ')
 
-command! -buffer -nargs=1 VimwikiGoto call vimwiki#goto("<args>")
-
 " table commands
 command! -buffer -nargs=* VimwikiTable call vimwiki_tbl#create(<f-args>)
 command! -buffer VimwikiTableAlignQ call vimwiki_tbl#align_or_cmd('gqq')
@@ -231,69 +234,65 @@ command! -buffer VimwikiTableAlignW call vimwiki_tbl#align_or_cmd('gww')
 command! -buffer VimwikiTableMoveColumnLeft call vimwiki_tbl#move_column_left()
 command! -buffer VimwikiTableMoveColumnRight call vimwiki_tbl#move_column_right()
 
-" diary commands
-command! -buffer VimwikiDiaryNextDay call vimwiki_diary#goto_next_day()
-command! -buffer VimwikiDiaryPrevDay call vimwiki_diary#goto_prev_day()
-
 " COMMANDS }}}
 
 " KEYBINDINGS {{{
 if g:vimwiki_use_mouse
   nmap <buffer> <S-LeftMouse> <NOP>
   nmap <buffer> <C-LeftMouse> <NOP>
-  noremap <silent><buffer> <2-LeftMouse> :VimwikiFollowLink<CR>
-  noremap <silent><buffer> <S-2-LeftMouse> <LeftMouse>:VimwikiSplitLink<CR>
-  noremap <silent><buffer> <C-2-LeftMouse> <LeftMouse>:VimwikiVSplitLink<CR>
-  noremap <silent><buffer> <RightMouse><LeftMouse> :VimwikiGoBackLink<CR>
+  noremap <silent><buffer> <2-LeftMouse> :VimwikiFollowWord<CR>
+  noremap <silent><buffer> <S-2-LeftMouse> <LeftMouse>:VimwikiSplitWord<CR>
+  noremap <silent><buffer> <C-2-LeftMouse> <LeftMouse>:VimwikiVSplitWord<CR>
+  noremap <silent><buffer> <RightMouse><LeftMouse> :VimwikiGoBackWord<CR>
 endif
 
-if !hasmapto('<Plug>VimwikiFollowLink')
-  nmap <silent><buffer> <CR> <Plug>VimwikiFollowLink
+if !hasmapto('<Plug>VimwikiFollowWord')
+  nmap <silent><buffer> <CR> <Plug>VimwikiFollowWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiFollowLink :VimwikiFollowLink<CR>
+      \ <Plug>VimwikiFollowWord :VimwikiFollowWord<CR>
 
-if !hasmapto('<Plug>VimwikiSplitLink')
-  nmap <silent><buffer> <S-CR> <Plug>VimwikiSplitLink
+if !hasmapto('<Plug>VimwikiSplitWord')
+  nmap <silent><buffer> <S-CR> <Plug>VimwikiSplitWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiSplitLink :VimwikiSplitLink<CR>
+      \ <Plug>VimwikiSplitWord :VimwikiSplitWord<CR>
 
-if !hasmapto('<Plug>VimwikiVSplitLink')
-  nmap <silent><buffer> <C-CR> <Plug>VimwikiVSplitLink
+if !hasmapto('<Plug>VimwikiVSplitWord')
+  nmap <silent><buffer> <C-CR> <Plug>VimwikiVSplitWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiVSplitLink :VimwikiVSplitLink<CR>
+      \ <Plug>VimwikiVSplitWord :VimwikiVSplitWord<CR>
 
-if !hasmapto('<Plug>VimwikiGoBackLink')
-  nmap <silent><buffer> <BS> <Plug>VimwikiGoBackLink
+if !hasmapto('<Plug>VimwikiGoBackWord')
+  nmap <silent><buffer> <BS> <Plug>VimwikiGoBackWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiGoBackLink :VimwikiGoBackLink<CR>
+      \ <Plug>VimwikiGoBackWord :VimwikiGoBackWord<CR>
 
-if !hasmapto('<Plug>VimwikiNextLink')
-  nmap <silent><buffer> <TAB> <Plug>VimwikiNextLink
+if !hasmapto('<Plug>VimwikiNextWord')
+  nmap <silent><buffer> <TAB> <Plug>VimwikiNextWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiNextLink :VimwikiNextLink<CR>
+      \ <Plug>VimwikiNextWord :VimwikiNextWord<CR>
 
-if !hasmapto('<Plug>VimwikiPrevLink')
-  nmap <silent><buffer> <S-TAB> <Plug>VimwikiPrevLink
+if !hasmapto('<Plug>VimwikiPrevWord')
+  nmap <silent><buffer> <S-TAB> <Plug>VimwikiPrevWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiPrevLink :VimwikiPrevLink<CR>
+      \ <Plug>VimwikiPrevWord :VimwikiPrevWord<CR>
 
-if !hasmapto('<Plug>VimwikiDeleteLink')
-  nmap <silent><buffer> <Leader>wd <Plug>VimwikiDeleteLink
+if !hasmapto('<Plug>VimwikiDeleteWord')
+  nmap <silent><buffer> <Leader>wd <Plug>VimwikiDeleteWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiDeleteLink :VimwikiDeleteLink<CR>
+      \ <Plug>VimwikiDeleteWord :VimwikiDeleteWord<CR>
 
-if !hasmapto('<Plug>VimwikiRenameLink')
-  nmap <silent><buffer> <Leader>wr <Plug>VimwikiRenameLink
+if !hasmapto('<Plug>VimwikiRenameWord')
+  nmap <silent><buffer> <Leader>wr <Plug>VimwikiRenameWord
 endif
 noremap <silent><script><buffer>
-      \ <Plug>VimwikiRenameLink :VimwikiRenameLink<CR>
+      \ <Plug>VimwikiRenameWord :VimwikiRenameWord<CR>
 
 if !hasmapto('<Plug>VimwikiToggleListItem')
   nmap <silent><buffer> <C-Space> <Plug>VimwikiToggleListItem
@@ -305,35 +304,10 @@ endif
 noremap <silent><script><buffer>
       \ <Plug>VimwikiToggleListItem :VimwikiToggleListItem<CR>
 
-if !hasmapto('<Plug>VimwikiDiaryNextDay')
-  nmap <silent><buffer> <C-Down> <Plug>VimwikiDiaryNextDay
-endif
-noremap <silent><script><buffer>
-      \ <Plug>VimwikiDiaryNextDay :VimwikiDiaryNextDay<CR>
-
-if !hasmapto('<Plug>VimwikiDiaryPrevDay')
-  nmap <silent><buffer> <C-Up> <Plug>VimwikiDiaryPrevDay
-endif
-noremap <silent><script><buffer>
-      \ <Plug>VimwikiDiaryPrevDay :VimwikiDiaryPrevDay<CR>
-
-function! s:CR() "{{{
-  let res = vimwiki_lst#kbd_cr()
-  if res == "\<CR>" && g:vimwiki_table_auto_fmt
-    let res = vimwiki_tbl#kbd_cr()
-  endif
-  return res
-endfunction "}}}
-
-" List and Table <CR> mapping
-inoremap <buffer> <expr> <CR> <SID>CR()
-
-" List mappings
-nnoremap <buffer> o :call vimwiki_lst#kbd_oO('o')<CR>a
-nnoremap <buffer> O :call vimwiki_lst#kbd_oO('O')<CR>a
 
 " Table mappings
 if g:vimwiki_table_auto_fmt
+  inoremap <expr> <buffer> <CR> vimwiki_tbl#kbd_cr()
   inoremap <expr> <buffer> <Tab> vimwiki_tbl#kbd_tab()
   inoremap <expr> <buffer> <S-Tab> vimwiki_tbl#kbd_shift_tab()
 endif

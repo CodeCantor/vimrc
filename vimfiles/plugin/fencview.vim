@@ -657,7 +657,7 @@ function! s:EditAutoEncoding(...) "{{{1
         echohl Error | echomsg "File is modified!" | echohl None
         return
     endif
-    if !has('iconv') && !has('win32')
+    if !has('iconv')
         echohl Error | echomsg "\"+iconv\" feature not found, see Tip #1 in fencview.vim" | echohl None
         return
     endif

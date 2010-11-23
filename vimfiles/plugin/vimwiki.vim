@@ -72,7 +72,7 @@ function! s:setup_buffer_enter() "{{{
     endif
 
     if idx == -1
-      call add(g:vimwiki_list, {'path': path, 'ext': ext, 'temp': 1})
+      call add(g:vimwiki_list, {'path': path, 'ext': ext})
       let g:vimwiki_current_idx = len(g:vimwiki_list) - 1
     else
       let g:vimwiki_current_idx = idx
@@ -81,21 +81,22 @@ function! s:setup_buffer_enter() "{{{
     let b:vimwiki_idx = g:vimwiki_current_idx
   endif
 
-  " Update existed/non-existed links highlighting.
-  call vimwiki#highlight_links()
+  call s:setup_colors()
+
+  if &filetype != 'vimwiki'
+    setlocal ft=vimwiki
+  else
+    setlocal syntax=vimwiki
+  endif
 
   " Settings foldmethod, foldexpr and foldtext are local to window. Thus in a
   " new tab with the same buffer folding is reset to vim defaults. So we
   " insist vimwiki folding here.
+  " TODO: remove the same from ftplugin.
   if g:vimwiki_folding == 1 && &fdm != 'expr'
     setlocal fdm=expr
     setlocal foldexpr=VimwikiFoldLevel(v:lnum)
     setlocal foldtext=VimwikiFoldText()
-  endif
-
-  " And conceal level too.
-  if g:vimwiki_conceallevel && exists("+conceallevel")
-    let &conceallevel = g:vimwiki_conceallevel
   endif
 
   " Set up menu
@@ -103,6 +104,28 @@ function! s:setup_buffer_enter() "{{{
     exe 'nmenu enable '.g:vimwiki_menu.'.Table'
   endif
 endfunction "}}}
+
+function! s:setup_colors()"{{{
+  if g:vimwiki_hl_headers == 0
+    return
+  endif
+
+  if &background == 'light'
+    hi def VimwikiHeader1 guibg=bg guifg=#aa5858 gui=bold ctermfg=DarkRed
+    hi def VimwikiHeader2 guibg=bg guifg=#309010 gui=bold ctermfg=DarkGreen
+    hi def VimwikiHeader3 guibg=bg guifg=#1030a0 gui=bold ctermfg=DarkBlue
+    hi def VimwikiHeader4 guibg=bg guifg=#103040 gui=bold ctermfg=Black
+    hi def VimwikiHeader5 guibg=bg guifg=#001020 gui=bold ctermfg=Black
+    hi def VimwikiHeader6 guibg=bg guifg=#000000 gui=bold ctermfg=Black
+  else
+    hi def VimwikiHeader1 guibg=bg guifg=#e08090 gui=bold ctermfg=Red
+    hi def VimwikiHeader2 guibg=bg guifg=#80e090 gui=bold ctermfg=Green
+    hi def VimwikiHeader3 guibg=bg guifg=#6090e0 gui=bold ctermfg=Blue
+    hi def VimwikiHeader4 guibg=bg guifg=#c0c0f0 gui=bold ctermfg=White
+    hi def VimwikiHeader5 guibg=bg guifg=#e0e0f0 gui=bold ctermfg=White
+    hi def VimwikiHeader6 guibg=bg guifg=#f0f0f0 gui=bold ctermfg=White
+  endif
+endfunction"}}}
 
 " OPTION get/set functions {{{
 " return value of option for current wiki or if second parameter exists for
@@ -178,13 +201,11 @@ let s:vimwiki_defaults.index = 'index'
 let s:vimwiki_defaults.ext = '.wiki'
 let s:vimwiki_defaults.maxhi = 1
 let s:vimwiki_defaults.syntax = 'default'
+let s:vimwiki_defaults.gohome = 'split'
 let s:vimwiki_defaults.html_header = ''
 let s:vimwiki_defaults.html_footer = ''
 let s:vimwiki_defaults.nested_syntaxes = {}
 let s:vimwiki_defaults.auto_export = 0
-" is wiki temporary -- was added to g:vimwiki_list by opening arbitrary wiki
-" file.
-let s:vimwiki_defaults.temp = 0
 
 " diary
 let s:vimwiki_defaults.diary_rel_path = 'diary/'
@@ -244,12 +265,9 @@ call s:default('table_auto_fmt', 1)
 call s:default('w32_dir_enc', '')
 call s:default('CJK_length', 0)
 call s:default('dir_link', '')
-call s:default('file_exts', 'pdf,txt,doc,rtf,xls,php,zip,rar,7z,html,gz')
-call s:default('valid_html_tags', 'b,i,s,u,sub,sup,kbd,br,hr')
 
 call s:default('html_header_numbering', 0)
 call s:default('html_header_numbering_sym', '')
-call s:default('conceallevel', 3)
 
 call s:default('current_idx', 0)
 
@@ -274,8 +292,7 @@ else
 endif
 let g:vimwiki_rxWeblink = '\%("[^"(]\+\((\([^)]\+\))\)\?":\)\?'.
       \'\%(https\?\|ftp\|gopher\|telnet\|file\|notes\|ms-help\):'.
-      \'\%(\%(\%(//\)\|\%(\\\\\)\)\+[A-Za-z0-9:#@%/;,$~()_?+=.&\\\-]*\)'.
-      \'[().,?]\@<!'
+      \'\%(\%(\%(//\)\|\%(\\\\\)\)\+[A-Za-z0-9:#@%/;,$~()_?+=.&\\\-]*\)'
 "}}}
 
 " AUTOCOMMANDS for all known wiki extensions {{{
@@ -299,13 +316,12 @@ augroup vimwiki
   for ext in keys(extensions)
     exe 'autocmd BufEnter *'.ext.' call s:setup_buffer_enter()'
     exe 'autocmd BufLeave,BufHidden *'.ext.' call s:setup_buffer_leave()'
-    exe 'autocmd BufNewFile,BufRead, *'.ext.' setf vimwiki'
 
     " ColorScheme could have or could have not a
     " VimwikiHeader1..VimwikiHeader6 highlight groups. We need to refresh
     " syntax after colorscheme change.
-    exe 'autocmd ColorScheme *'.ext.' call vimwiki#setup_colors()'.
-          \ ' | call vimwiki#highlight_links()'
+    exe 'autocmd ColorScheme *'.ext.' call s:setup_colors()'.
+          \ ' | set syntax=vimwiki'
 
     " Format tables when exit from insert mode. Do not use textwidth to
     " autowrap tables.
@@ -318,11 +334,11 @@ augroup END
 "}}}
 
 " COMMANDS {{{
-command! VimwikiUISelect call vimwiki#ui_select()
-command! -count VimwikiIndex
-      \ call vimwiki#goto_index(v:count1)
-command! -count VimwikiTabIndex tabedit <bar>
-      \ call vimwiki#goto_index(v:count1)
+command! VimwikiUISelect call vimwiki#WikiUISelect()
+command! -count VimwikiGoHome
+      \ call vimwiki#WikiGoHome(v:count1)
+command! -count VimwikiTabGoHome tabedit <bar>
+      \ call vimwiki#WikiGoHome(v:count1)
 
 command! -count VimwikiMakeDiaryNote
       \ call vimwiki_diary#make_note(v:count1)
@@ -331,15 +347,15 @@ command! -count VimwikiTabMakeDiaryNote tabedit <bar>
 "}}}
 
 " MAPPINGS {{{
-if !hasmapto('<Plug>VimwikiIndex')
-  map <silent><unique> <Leader>ww <Plug>VimwikiIndex
+if !hasmapto('<Plug>VimwikiGoHome')
+  map <silent><unique> <Leader>ww <Plug>VimwikiGoHome
 endif
-noremap <unique><script> <Plug>VimwikiIndex :VimwikiIndex<CR>
+noremap <unique><script> <Plug>VimwikiGoHome :VimwikiGoHome<CR>
 
-if !hasmapto('<Plug>VimwikiTabIndex')
-  map <silent><unique> <Leader>wt <Plug>VimwikiTabIndex
+if !hasmapto('<Plug>VimwikiTabGoHome')
+  map <silent><unique> <Leader>wt <Plug>VimwikiTabGoHome
 endif
-noremap <unique><script> <Plug>VimwikiTabIndex :VimwikiTabIndex<CR>
+noremap <unique><script> <Plug>VimwikiTabGoHome :VimwikiTabGoHome<CR>
 
 if !hasmapto('<Plug>VimwikiUISelect')
   map <silent><unique> <Leader>ws <Plug>VimwikiUISelect
@@ -366,7 +382,7 @@ function! s:build_menu(topmenu)
     let norm_path = fnamemodify(VimwikiGet('path', idx), ':h:t')
     let norm_path = escape(norm_path, '\ ')
     execute 'menu '.a:topmenu.'.Open\ index.'.norm_path.
-          \ ' :call vimwiki#goto_index('.(idx + 1).')<CR>'
+          \ ' :call vimwiki#WikiGoHome('.(idx + 1).')<CR>'
     execute 'menu '.a:topmenu.'.Open/Create\ diary\ note.'.norm_path.
           \ ' :call vimwiki_diary#make_note('.(idx + 1).')<CR>'
     let idx += 1
