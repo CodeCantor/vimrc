@@ -7,6 +7,9 @@
 " Change:
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [*] 2010-11-23
+"     改进 Vim7.3 相关的配置，使其支持 UNIX 系统
+"
 " [!] 2010-11-22
 "     增加 void 配色，更改配色设置（蛋疼）
 "
@@ -271,6 +274,25 @@ if has("multi_byte")
 else
     echoerr "Sorry, this version of (g)vim was not compiled with +multi_byte"
 endif
+
+" 永久撤销，Vim7.3 新特性
+if has('persistent_undo')
+    set undofile
+
+    " 设置撤销文件的存放的目录
+    if has("unix")
+        set undodir=/tmp/,~/tmp,~/Temp
+    else
+        set undodir=d:/temp/
+    endif
+    set undolevels=1000
+    set undoreload=10000
+endif
+
+" Diff 模式的时候鼠标同步滚动 for Vim7.3
+if has('cursorbind')
+    set cursorbind
+end
 
 
 " =========
