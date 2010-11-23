@@ -7,6 +7,24 @@
 " Change:
 " [+]new feature  [*]improvement  [!]change  [x]bug fix
 "
+" [!] 2010-11-22
+"     增加 void 配色，更改配色设置（蛋疼）
+"
+" [!] 2010-10-14
+"     更改配色为 Son of Obsidian，参见 http://studiostyl.es/schemes/son-of-obsidian
+"
+" [+] 2010-09-13
+"     增加永久撤销（for Vim7.3）相关配置
+"
+" [*] 2010-08-25
+"     修改 Vimwiki 命令和快捷键
+"
+" [!] 2010-07-26
+"     修改 status bar 显示 git 状态（已取消）
+"
+" [*] 2010-06-17
+"     重新配置 Mac 下的字体
+"
 " [+] 2010-05-11
 "     给 Win32 下的 gVim 窗口设置透明度
 "
@@ -521,10 +539,10 @@ if has('syntax')
     colorscheme zenburn
 
     " 默认编辑器配色
-    au BufNewFile,BufRead,BufEnter,WinEnter * colo zenburn
+    au BufNewFile,BufRead,BufEnter,WinEnter * colo sonofobsidian
 
     " 各不同类型的文件配色不同
-    au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo moria
+    au BufNewFile,BufRead,BufEnter,WinEnter *.wiki colo void
 
     " 保证语法高亮
     syntax on
